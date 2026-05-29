@@ -166,21 +166,10 @@ namespace Chatbot
             List<string> per_word = new List<string>();//Array created for storing the words and ensuring proper memory management
             List<string> answers_found = new List<string>();
 
-            // FIX (interest save bug): Separate the interest confirmation message from the
-            // keyword lookup results. Previously both were appended to the same `message`
-            // string and displayed in one bubble, causing the interest confirmation
-            // ("Great, I added phishing...") to be concatenated with an unrelated topic
-            // answer (Insider Threat) in a single response. Now the confirmation is
-            // captured separately and shown in its own bubble before keyword results.
+          
             string interest_message = string.Empty;
 
-            // FIX (insider bug): Changed word.Length < 2 to word.Length <= 2.
-            // The original check used strict less-than, so 2-letter words like "in",
-            // "is", "am", "it" slipped through to keyword matching.
-            // "in" then matched keyword "insider" via the substring Contains check,
-            // causing Insider Threat to appear in unrelated responses.
-            // Raising the threshold to <= 2 blocks all single- and two-letter words
-            // by length alone, regardless of the ignore list.
+   
             foreach (string word in words)
             {
                 if (word.Length <= 2 || ignore.Contains(word.ToLower()))
@@ -191,25 +180,14 @@ namespace Chatbot
                 //if the user enters a like indicator meaning they like a certain topic we will save the interest
                 if (word.Contains("interested") || word.Contains("like"))
                 {
-                    // FIX (interest save bug): Store the interest confirmation separately
-                    // so it does not get mixed into the cybersecurity keyword answer below.
+                
                     interest_message += tracker.SaveInterests(username, words, ignore);
-                    continue; // FIX (2fa + insider bug): Skip keyword matching for "interested"/"like"
-                              // so they never accidentally match a topic keyword.
+                    continue; 
                 }
 
                 foreach (string answer in reply)
                 {
-                    // FIX (2fa bug): Changed exact equality back to a smarter Contains match.
-                    // The previous exact-equality check (keyword == word) blocked "2fa" from
-                    // matching because the reply keyword is stored as "2fa" but the user may
-                    // type variations. More importantly, exact equality also broke short
-                    // alphanumeric tokens like "2fa" (length 3) that are valid keywords.
-                    // The fix uses keyword == word for normal words but also allows
-                    // word.Contains(keyword) when the keyword itself is short (<=3 chars,
-                    // e.g. "vpn", "2fa") to handle those edge cases — while keeping the
-                    // length guard (word.Length <= 2) above to prevent tiny words like "in"
-                    // from triggering "insider" via substring matching.
+                   
                     string keyword = answer.Split(':')[0].Trim().ToLower();
                     if (keyword == word || (keyword.Length <= 3 && word.Contains(keyword)))
                     {
@@ -227,18 +205,13 @@ namespace Chatbot
                         ? chosen.Substring(colonIdx + 1).Trim()
                         : chosen;
 
-                    // FIX (phishing duplicate bug): Only add if not already in the list.
-                    // Without this Distinct guard here, the same answer could be added
-                    // multiple times mid-loop if two keywords matched the same reply entry
-                    // (e.g. "phishing" matched by both "phishing" and a saved interest word),
-                    // causing it to appear twice in the final bubble.
+                
                     if (!answers_found.Contains(display))
                         answers_found.Add(display);
                 }
             }
 
-            // FIX (interest save bug): Show the interest confirmation in its own bubble
-            // first, completely separate from any keyword lookup answer that follows.
+       
             if (!string.IsNullOrWhiteSpace(interest_message))
             {
                 show_message("CyberBot", interest_message.Trim());
