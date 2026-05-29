@@ -2,14 +2,11 @@
 using System.Collections;
 
 
-
-
-
 //ST10474357
 //Part 2 summarry
 namespace ai_response
 {
-    public class chats
+    public class Chats
     {
         //global array
         ArrayList answers = new ArrayList();
@@ -20,83 +17,83 @@ namespace ai_response
         ArrayList PositiveWord = new ArrayList();
         ArrayList NegativeWord = new ArrayList();
 
-        //method to chat
-        public void ai_chat(string name)
+        // Constructor that accepts the shared reply and ignore lists from MainWindow
+        public Chats(ArrayList reply, ArrayList ignore)
         {
             //Store all the answers the user
-            answers.Add("Password must be 8 characters long and include numbers and symbols");
-            answers.Add("Phishing is a scam email that tries to steal your personal information");
-            answers.Add("Safe browsing means using https websites and avoiding suspicious links");
-            answers.Add("Malware is harmful software that can damage or steal data from your computer");
-            answers.Add("Two factor authentication adds an extra layer of security to your account");
-            answers.Add("a VPN hides your internet activity and keeps your connection private");
-            answers.Add("You should update your software regularly to fix security vulnerabilities");
-            answers.Add("Backup your files regularly to protect against data loss or ransomware");
-            answers.Add("A Insider threat is a threat from people within the organization itself and can leak or release data" );
-            answers.Add("Crypto Jacking is secretly using someones device to mine crypto currency");
-            answers.Add("Drive by downloads is Malware that installs itself automatically when you enter a website");
-            answers.Add("A ddos attack occurs when a computer server is overu=run by reads and writes making it offline to actual users");
+            reply.Add("password: Password must be 8 characters long and include numbers and symbols");
+            reply.Add("phishing: Phishing is a scam email that tries to steal your personal information");
+            reply.Add("browsing: Safe browsing means using https websites and avoiding suspicious links");
+            reply.Add("malware: Malware is harmful software that can damage or steal data from your computer");
+            reply.Add("authentication: Two factor authentication adds an extra layer of security to your account");
+            reply.Add("vpn: a VPN hides your internet activity and keeps your connection private");
+            reply.Add("update: You should update your software regularly to fix security vulnerabilities");
+            reply.Add("backup: Backup your files regularly to protect against data loss or ransomware");
+            reply.Add("insider: A Insider threat is a threat from people within the organization itself and can leak or release data");
+            reply.Add("crypto: Crypto Jacking is secretly using someones device to mine crypto currency");
+            reply.Add("drive: Drive by downloads is Malware that installs itself automatically when you enter a website");
+            reply.Add("ddos: A ddos attack occurs when a computer server is overu=run by reads and writes making it offline to actual users");
 
             //store ignore
-            ignoring.Add("what");
-            ignoring.Add("is");
-            ignoring.Add("about");
-            ignoring.Add("are");
-            ignoring.Add("had");
+            ignore.Add("what");
+            ignore.Add("is");
+            ignore.Add("about");
+            ignore.Add("are");
+            ignore.Add("had");
 
-            ignoring.Add("a");
-            ignoring.Add("the");
-            ignoring.Add("us");
-            ignoring.Add("an");
+            ignore.Add("a");
+            ignore.Add("the");
+            ignore.Add("us");
+            ignore.Add("an");
 
 
             //storing ignore pronouns
-            ignoring.Add("i");
-            ignoring.Add("you");
-            ignoring.Add("he");
-            ignoring.Add("she");
-            ignoring.Add("it");
-            ignoring.Add("we");
-            ignoring.Add("they");
-            ignoring.Add("me");
-            ignoring.Add("him");
-            ignoring.Add("her");
-            ignoring.Add("us");
-            ignoring.Add("them");
-            ignoring.Add("my");
-            ignoring.Add("your");
-            ignoring.Add("his");
-            ignoring.Add("its");
-            ignoring.Add("our");
-            ignoring.Add("their");
-            ignoring.Add("mine");
-            ignoring.Add("yours");
+            ignore.Add("i");
+            ignore.Add("you");
+            ignore.Add("he");
+            ignore.Add("she");
+            ignore.Add("it");
+            ignore.Add("we");
+            ignore.Add("they");
+            ignore.Add("me");
+            ignore.Add("him");
+            ignore.Add("her");
+            ignore.Add("us");
+            ignore.Add("them");
+            ignore.Add("my");
+            ignore.Add("your");
+            ignore.Add("his");
+            ignore.Add("its");
+            ignore.Add("our");
+            ignore.Add("their");
+            ignore.Add("mine");
+            ignore.Add("yours");
 
             //storing ignore verbs
 
-            ignoring.Add("be");
-            ignoring.Add("am");
-            ignoring.Add("is");
-            ignoring.Add("are");
-            ignoring.Add("was");
-            ignoring.Add("have");
-            ignoring.Add("were");
+            ignore.Add("be");
+            ignore.Add("am");
+            ignore.Add("is");
+            ignore.Add("are");
+            ignore.Add("was");
+            ignore.Add("have");
+            ignore.Add("were");
 
-            ignoring.Add("has");
-            ignoring.Add("had");
-            ignoring.Add("do");
-            ignoring.Add("did");
-            ignoring.Add("does");
-            ignoring.Add("will");
-            ignoring.Add("can");
-            ignoring.Add("could");
-    
-            ignoring.Add("may");
-            ignoring.Add("would");
-            ignoring.Add("should");
-            ignoring.Add("shall");
-  
-            ignoring.Add("might");
+            ignore.Add("has");
+            ignore.Add("had");
+            ignore.Add("do");
+            ignore.Add("did");
+            ignore.Add("does");
+            ignore.Add("will");
+            ignore.Add("can");
+            ignore.Add("could");
+
+            ignore.Add("may");
+            ignore.Add("would");
+            ignore.Add("should");
+            ignore.Add("shall");
+
+            ignore.Add("might");
 
 
             //store positive words
@@ -116,7 +113,11 @@ namespace ai_response
             NegativeWord.Add("sad");
             NegativeWord.Add("upset");
             NegativeWord.Add("angry");
+        }
 
+        //method to chat
+        public void ai_chat(string name)
+        {
             //All the Good words to maximize user interaction and responsiveness
 
             string[] greetingResponses = {
@@ -148,7 +149,7 @@ namespace ai_response
             string asking = string.Empty;
             do
             {
-                Console.WriteLine(name + ": "); 
+                Console.WriteLine(name + ": ");
                 asking = Console.ReadLine();
                 if (asking == null) asking = "";
                 string input = asking.ToLower();
@@ -253,7 +254,7 @@ namespace ai_response
                     Console.WriteLine("  1) Passwords        2) Phishing");
                     Console.WriteLine("  3) Safe Browsing     4) Malware & Viruses");
                     Console.WriteLine("  5) 2FA              6) VPNs");
-                     Console.WriteLine("  7) Software Updates 8) Backups");
+                    Console.WriteLine("  7) Software Updates 8) Backups");
 
                     Console.ResetColor();
                 }
@@ -262,11 +263,11 @@ namespace ai_response
                 {
 
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Cyberbot AI: That's great to hear, " + name + "! I'm happy to help keep you Stay safe!" );
+                    Console.WriteLine("Cyberbot AI: That's great to hear, " + name + "! I'm happy to help keep you Stay safe!");
                     Console.ResetColor();
                 }
-           
-                else if (input.Contains("bad") ||  input.Contains("not happy") || input.Contains("unhappy") || input.Contains("sad") || input.Contains("upset") || input.Contains("angry"))
+
+                else if (input.Contains("bad") || input.Contains("not happy") || input.Contains("unhappy") || input.Contains("sad") || input.Contains("upset") || input.Contains("angry"))
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("Cyberbot AI:  I'm sorry to hear that, " + name + ". Let me try to help you better. Ask me anything about cybersecurity!");
@@ -278,6 +279,35 @@ namespace ai_response
                 }
 
             } while (asking.ToLower() != "exit" && asking.ToLower() != "quit" && asking.ToLower() != "stop");//While the user did not enter the stop prompts keep the program running
+        }
+        public string Fallbackresponse()
+        {
+            string[] fallback =
+            {
+        "I am sorry, I do not understand that. Could you rephrase your question?",
+        "I did not quite get that. Try asking about cybersecurity topics like phishing or malware.",
+        "Hmm, I am not sure how to respond to that. Can you ask something else?",
+        "I could not find an answer for that. Please ask about passwords, phishing, or malware.",
+        "My apologies, I do not have information on that topic yet."
+    };
+            return fallback[new Random().Next(fallback.Length)];
+        }
+    }
+
+    // Separate class extracted so MainWindow can instantiate it as bot.GetFallback()
+    public class FallbackResponse
+    {
+        public string GetFallback()
+        {
+            string[] fallback =
+            {
+        "I am sorry, I do not understand that. Could you rephrase your question?",
+        "I did not quite get that. Try asking about cybersecurity topics like phishing or malware.",
+        "Hmm, I am not sure how to respond to that. Can you ask something else?",
+        "I could not find an answer for that. Please ask about passwords, phishing, or malware.",
+        "My apologies, I do not have information on that topic yet."
+    };
+            return fallback[new Random().Next(fallback.Length)];
         }
     }
 }

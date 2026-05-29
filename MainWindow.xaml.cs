@@ -2,8 +2,8 @@
 using System;
 using System.Collections;
 //importing all necessarry tools
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,7 +17,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Chatbot
 {
@@ -45,6 +44,10 @@ namespace Chatbot
         //Greet and name the user from Part one of the chatbot
         GreetAndName greeter = new GreetAndName();
 
+        //Tracker and bot declared as fields so they are accessible across all methods
+        InterestTracker tracker = new InterestTracker();
+        FallbackResponse bot = new FallbackResponse();
+
 
 
 
@@ -66,9 +69,9 @@ namespace Chatbot
 
             try
             {
-                string wavPath = Path.Combine(
+                string wavPath = System.IO.Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory, "greeting.wav");
-                var player = new System.Media.SoundPlayer(wavPath); 
+                var player = new System.Media.SoundPlayer(wavPath);
                 player.Load();
                 player.Play();
 
@@ -185,7 +188,7 @@ namespace Chatbot
 
         }
 
-        private void ai_check(string input) 
+        private void ai_check(string input)
         {
 
             if (string.IsNullOrWhiteSpace(input))
@@ -214,7 +217,7 @@ namespace Chatbot
 
                 per_word.Clear();
 
-               //if the user enters a like indicator meaning they like a certain topic we will save the interest
+                //if the user enters a like indicator meaning they like a certain topic we will save the interest
                 if (word.Contains("interested") || word.Contains("like"))
                 {
                     message += tracker.SaveInterests(username, words, ignore) + "";
@@ -235,7 +238,7 @@ namespace Chatbot
                 {
                     String chosen = per_word[indexer.Next(0, per_word.Count)];
                     int colonIdx = chosen.IndexOf(':');
-             
+
                     string display = colonIdx >= 0
                         ? chosen.Substring(colonIdx + 1).Trim()
                         : chosen;
@@ -285,7 +288,7 @@ namespace Chatbot
         {
 
             TextBlock texblk = new TextBlock { TextWrapping = TextWrapping.Wrap };
-        //Styles for the text block the user text and the AI must have colors
+            //Styles for the text block the user text and the AI must have colors
 
 
 
@@ -312,7 +315,7 @@ namespace Chatbot
 
                 bubble.Margin = new Thickness(0, 3, 80, 3);
 
-                Foreground = Brushes.Red;
+                texblk.Inlines.ElementAt(0).Foreground = Brushes.Red;
 
                 //The cyber bot color must be red 
             }
@@ -335,7 +338,7 @@ namespace Chatbot
 
             //delay for a few moments to avoid immediate closure
             System.Threading.Tasks.Task.Delay(1500).ContinueWith(_ =>
-                Dispatcher.Invoke(() => Application.Current.Shutdown()));
+                Dispatcher.Invoke(() => System.Windows.Application.Current.Shutdown()));
         }
 
         //Extra Feature saving the user preferences in A text File
