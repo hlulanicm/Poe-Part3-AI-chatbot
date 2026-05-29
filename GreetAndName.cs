@@ -25,17 +25,34 @@ namespace ai_response
             return enteredName.Trim();
 
         }
+        public string NewUserGreeting(string name)
+        {
+            string[] messages =
+            {
+                "=Hello, " + name + "! Its good to see you. Ask me anything about cybersecurity.",
+                "Good to have you back, " + name + "! Ready to keep you safe online. What would you like to know?",
+                "Hey " + name + ",Iam cyber bot a cyber security AI What cybersecurity topic can I help you with today?",
+                "It is great to see you again, " + name + "! Ask away , I am here to help."
+              return messages[rand.Next(messages.Length)];
+        };
+         
+        
+        public string WelcomeBack(string name)
+        {
+            string[] messages =
+            {
+                "Welcome back, " + name + "! Great to see you again. Ask me anything about cybersecurity.",
+                "Good to have you back, " + name + "! Ready to keep you safe online. What would you like to know?",
+                "Hey " + name + ", welcome back! What cybersecurity topic can I help you with today?",
+                "It is great to see you again, " + name + "! Ask away — I am here to help."
+              return messages[rand.Next(messages.Length)];
+        };
+         
+        
 
-        public string WelcomeNew( string name ) {
-            "Hello " + name + " I am cyber bot your cybersecurity AI assistant how can i help you",
-            "Hi " + name + "! I am your cybersecurity awareness companion. Feel free to ask me about passwords, phishing, malware, and more.",
-            "Hey there, " + name + "! I am CyberBot AI, ready to help you stay safe in the digital world. What is on your mind?",
-            };
 
-            return messages[rand.Next(messages.Length)];
+public string Goodbye(string name)
 
-
-public string Goodbye(string name) 
         {
             string displayName = string.IsNullOrWhiteSpace(name) ? "friend" : name;
 
@@ -49,7 +66,7 @@ public string Goodbye(string name)
             return messages[rand.Next(messages.Length)];
 
 
-
+            }
 
         }
 }
