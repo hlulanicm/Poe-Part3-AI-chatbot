@@ -46,41 +46,20 @@ namespace Chatbot
 
         //Tracker and bot declared as fields so they are accessible across all methods
         InterestTracker tracker = new InterestTracker();
-        FallbackResponse bot = new FallbackResponse();
+        Chats bot;
 
 
 
 
         public MainWindow()
         {
-
-
-
-
             InitializeComponent();
 
+            bot = new Chats(reply, ignore);
 
-            //We are loading all the content and storing them in a constructor that has two proper arguments
-
-            new chats(reply, ignore);
-
-
-            //Play greeting File (File location has changed 
-
-            try
-            {
-                string wavPath = System.IO.Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory, "greeting.wav");
-                var player = new System.Media.SoundPlayer(wavPath);
-                player.Load();
-                player.Play();
-
-
-            }
-
+            try { AudioGreeting.PlayGreeting(); }
             catch { }
         }
-
         private void proceed(object sender, RoutedEventArgs e)
 
         {
@@ -209,10 +188,10 @@ namespace Chatbot
             List<string> answers_found = new List<string>();
 
 
-            //if the first word is less than 3 words the Ai will read the next word and skip the current word (less than 3) 
+            //if the first word is less than 2 words the Ai will read the next word and skip the current word (less than 2) 
             foreach (string word in words)
             {
-                if (word.Length < 3 || ignore.Contains(word.ToLower()))
+                if (word.Length < 2 || ignore.Contains(word.ToLower()))
                     continue; //ignore short word
 
                 per_word.Clear();
@@ -225,13 +204,12 @@ namespace Chatbot
 
                 foreach (string answer in reply)
                 {
-                    if (answer.ToLower().Contains(word))
+                    string keyword = answer.Split(':')[0].Trim().ToLower();
+                    if (keyword.Contains(word) || word.Contains(keyword))
                     {
                         found = true;
                         per_word.Add(answer);
-
                     }
-
                 }
 
                 if (per_word.Count > 0)
@@ -266,7 +244,7 @@ namespace Chatbot
             }
             else
             {
-                show_message("CyberBot", bot.GetFallback());//if the chatbot does not understand what the user said show an appropriate error message
+                show_message("CyberBot", bot.Fallbackresponse());//if the chatbot does not understand what the user said show an appropriate error message
             }
         }
 
@@ -296,14 +274,14 @@ namespace Chatbot
             texblk.Inlines.Add(new Run(name + ": ")
             {
 
-                Foreground = Brushes.Blue,
+                Foreground = Brushes.Blue, //the name of the useer 
                 FontWeight = FontWeights.Bold
             });
             texblk.Inlines.Add(new Run(message) { Foreground = Brushes.White }); //the dialog text must be white but the user names must be blue
 
             Border bubble = new Border
             {
-                CornerRadius = new CornerRadius(8),
+                CornerRadius = new CornerRadius(8),//adding a nice curve 
                 Padding = new Thickness(10, 6, 10, 6),
                 Child = texblk
             };
@@ -311,6 +289,8 @@ namespace Chatbot
             if (name == "CyberBot")
             {
                 bubble.Background = new SolidColorBrush(Color.FromRgb(20, 44, 75));
+
+                //Alligning the text blocks to the left or right of the screen to accomodate change
                 bubble.HorizontalAlignment = HorizontalAlignment.Left;
 
                 bubble.Margin = new Thickness(0, 3, 80, 3);
@@ -333,7 +313,7 @@ namespace Chatbot
         private void ExitApp()
         {
 
-            //display an appropriate error message when the user wants to exit 
+            //display an appropriate error message when the user wants to exit
             show_message("CyberBot", greeter.Goodbye(username));
 
             //delay for a few moments to avoid immediate closure

@@ -310,4 +310,4 @@ namespace ai_response
             return fallback[new Random().Next(fallback.Length)];
         }
     }
-}
+}//THIS IS CHATS
