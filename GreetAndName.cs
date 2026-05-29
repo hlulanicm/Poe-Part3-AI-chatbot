@@ -5,7 +5,7 @@ namespace ai_response
 
     //  GreetAndName.cs:  Handles all greeting and farewell messages.
     //  MainWindow calls these methods so all user facing text lives here.
-    //IN this file i updated Greet and Name t
+    //IN this file i updated Greet and Name file
 
 
 
@@ -33,10 +33,11 @@ namespace ai_response
                 "Good to have you back, " + name + "! Ready to keep you safe online. What would you like to know?",
                 "Hey " + name + ",Iam cyber bot a cyber security AI What cybersecurity topic can I help you with today?",
                 "It is great to see you again, " + name + "! Ask away , I am here to help."
-              return messages[rand.Next(messages.Length)];
+           
         };
-         
-        
+            return messages[rand.Next(messages.Length)];
+        }
+
         public string WelcomeBack(string name)
         {
             string[] messages =
@@ -45,10 +46,13 @@ namespace ai_response
                 "Good to have you back, " + name + "! Ready to keep you safe online. What would you like to know?",
                 "Hey " + name + ", welcome back! What cybersecurity topic can I help you with today?",
                 "It is great to see you again, " + name + "! Ask away — I am here to help."
-              return messages[rand.Next(messages.Length)];
+
         };
-         
-        
+            return messages[rand.Next(messages.Length)];
+        }
+
+
+
 
 
 public string Goodbye(string name)

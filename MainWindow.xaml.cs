@@ -68,7 +68,7 @@ namespace Chatbot
             {
                 string wavPath = Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory, "greeting.wav");
-                var player = new System.Media.SoundPlayer(wavPath); // FIX 1: was WavPath (wrong casing)
+                var player = new System.Media.SoundPlayer(wavPath); 
                 player.Load();
                 player.Play();
 
@@ -122,8 +122,8 @@ namespace Chatbot
 
             // FIX 2: was malformed ternary with misplaced semicolon and colon
             String welcomMessage = returning
-                ? greeter.WelomeBack(username)
-                : greeter.WelcomeNew(username);
+                ? greeter.WelcomeBack(username)
+                : greeter.NewUserGreeting(username);
 
 
             show_message("CyberBot", welcomMessage);
@@ -154,11 +154,14 @@ namespace Chatbot
 
             if (string.IsNullOrWhiteSpace(rawQuestion))
             {
+                //prompting the user toenter a question
                 show_message("CyberBot", "Please enter a question.");
                 return;
             }
 
-            // Exit keywords typed directly in the chat box
+
+            //Input validation (end process)
+            //IF THE user inputs any exit questions we will stop the process 
             string lower = rawQuestion.ToLower();
             if (lower == "exit" || lower == "quit" || lower == "stop" ||
                 lower == "bye" || lower == "goodbye")
@@ -168,8 +171,8 @@ namespace Chatbot
                 ExitApp();
                 return;
             }
-
-           
+            //Input validation (special characters)
+            //Regecting any special characters 
             String cleaned = Regex.Replace(rawQuestion, @"[^a-zA-Z0-9\s'-]", " ").Trim();
 
             show_message(username, rawQuestion);
@@ -189,24 +192,29 @@ namespace Chatbot
             {
                 show_message("CyberBot", "Please enter a valid question no Special characters e.g @#$%^$%^&");
                 return;
+
+                //If the user has entered any special characters throw an appropriate error
             }
 
+
             string[] words = input.ToLower().Split(
-                new char[] { ' ', ' ', ' ', ' ', }, StringSplitOptions.RemoveEmptyEntries);
+                   new char[] { ' ', ',', '.', '?', '!', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);//slit all words into an array to ensure no blank words are stored
 
             bool found = false;
             string message = string.Empty;
-            List<string> per_word = new List<string>();
+            List<string> per_word = new List<string>();//Array created for storing the words and ensuring proper memory management
             List<string> answers_found = new List<string>();
 
+
+            //if the first word is less than 3 words the Ai will read the next word and skip the current word (less than 3) 
             foreach (string word in words)
             {
                 if (word.Length < 3 || ignore.Contains(word.ToLower()))
-                    continue;
+                    continue; //ignore short word
 
                 per_word.Clear();
 
-               //if the user enters a like indicatot meaning they like a certain topic we will save the interest
+               //if the user enters a like indicator meaning they like a certain topic we will save the interest
                 if (word.Contains("interested") || word.Contains("like"))
                 {
                     message += tracker.SaveInterests(username, words, ignore) + "";
@@ -227,7 +235,7 @@ namespace Chatbot
                 {
                     String chosen = per_word[indexer.Next(0, per_word.Count)];
                     int colonIdx = chosen.IndexOf(':');
-                    // FIX 7: was malformed ternary split across lines with wrong punctuation
+             
                     string display = colonIdx >= 0
                         ? chosen.Substring(colonIdx + 1).Trim()
                         : chosen;
@@ -238,21 +246,24 @@ namespace Chatbot
                 }
 
             }
-
+            //Final input validation processs the ai will peform to ensure smooth flow and validity of user input
             if (found && answers_found.Count > 0)
             {
                 answers_found = answers_found.Distinct().ToList();
                 foreach (string ans in answers_found)
+
                     message += ans + "\n";
                 show_message("CyberBot", message.TrimEnd('\n'));
             }
+
+            //no key word found but user saved an interest (error)
             else if (!string.IsNullOrWhiteSpace(message))
             {
                 show_message("CyberBot", message.Trim());
             }
             else
             {
-                show_message("CyberBot", bot.GetFallback());
+                show_message("CyberBot", bot.GetFallback());//if the chatbot does not understand what the user said show an appropriate error message
             }
         }
 
@@ -274,12 +285,18 @@ namespace Chatbot
         {
 
             TextBlock texblk = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        //Styles for the text block the user text and the AI must have colors
+
+
+
+
             texblk.Inlines.Add(new Run(name + ": ")
             {
-                Foreground = Brushes.Red,
+
+                Foreground = Brushes.Blue,
                 FontWeight = FontWeights.Bold
             });
-            texblk.Inlines.Add(new Run(message) { Foreground = Brushes.White });
+            texblk.Inlines.Add(new Run(message) { Foreground = Brushes.White }); //the dialog text must be white but the user names must be blue
 
             Border bubble = new Border
             {
@@ -292,7 +309,12 @@ namespace Chatbot
             {
                 bubble.Background = new SolidColorBrush(Color.FromRgb(20, 44, 75));
                 bubble.HorizontalAlignment = HorizontalAlignment.Left;
+
                 bubble.Margin = new Thickness(0, 3, 80, 3);
+
+                Foreground = Brushes.Red;
+
+                //The cyber bot color must be red 
             }
             else
             {
@@ -307,11 +329,19 @@ namespace Chatbot
 
         private void ExitApp()
         {
+
+            //display an appropriate error message when the user wants to exit 
             show_message("CyberBot", greeter.Goodbye(username));
+
+            //delay for a few moments to avoid immediate closure
             System.Threading.Tasks.Task.Delay(1500).ContinueWith(_ =>
                 Dispatcher.Invoke(() => Application.Current.Shutdown()));
         }
 
+        //Extra Feature saving the user preferences in A text File
+
+
+        //Method to check if the user is new or returning by comparing stored users(Will be removed Part 3 for a DB)
         private bool IsReturningUser(string name)
         {
             if (!File.Exists("users.txt")) return false;
@@ -325,4 +355,4 @@ namespace Chatbot
                 File.AppendAllText("users.txt", name + Environment.NewLine);
         }
     }
-}
+}//End of Namespace
