@@ -14,6 +14,10 @@ namespace Chatbot
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+
+    //this is the GUI code and how the GUI will operate and handle all user responses
     public partial class MainWindow : Window
     {
         public MainWindow()
