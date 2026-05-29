@@ -26,6 +26,7 @@ namespace ai_response
             reply.Add("browsing: Safe browsing means using https websites and avoiding suspicious links");
             reply.Add("malware: Malware is harmful software that can damage or steal data from your computer");
             reply.Add("authentication: Two factor authentication adds an extra layer of security to your account");
+            reply.Add("2fa: Two factor authentication adds an extra layer of security to your account");
             reply.Add("vpn: a VPN hides your internet activity and keeps your connection private");
             reply.Add("update: You should update your software regularly to fix security vulnerabilities");
             reply.Add("backup: Backup your files regularly to protect against data loss or ransomware");
@@ -33,6 +34,19 @@ namespace ai_response
             reply.Add("crypto: Crypto Jacking is secretly using someones device to mine crypto currency");
             reply.Add("drive: Drive by downloads is Malware that installs itself automatically when you enter a website");
             reply.Add("ddos: A ddos attack occurs when a computer server is overu=run by reads and writes making it offline to actual users");
+
+            answers.Add("Password must be 8 characters long and include numbers and symbols");       
+            answers.Add("Phishing is a scam email that tries to steal your personal information");  
+            answers.Add("Safe browsing means using https websites and avoiding suspicious links");   
+            answers.Add("Malware is harmful software that can damage or steal data from your computer");
+            answers.Add("Two factor authentication adds an extra layer of security to your account");
+            answers.Add("a VPN hides your internet activity and keeps your connection private");
+            answers.Add("You should update your software regularly to fix security vulnerabilities");
+            answers.Add("Backup your files regularly to protect against data loss or ransomware");  
+            answers.Add("A Insider threat is a threat from people within the organization itself and can leak or release data");
+            answers.Add("Crypto Jacking is secretly using someones device to mine crypto currency"); 
+            answers.Add("Drive by downloads is Malware that installs itself automatically when you enter a website"); 
+            answers.Add("A ddos attack occurs when a computer server is overrun by reads and writes making it offline to actual users");
 
             //store ignore
             ignore.Add("what");
@@ -45,6 +59,7 @@ namespace ai_response
             ignore.Add("the");
             ignore.Add("us");
             ignore.Add("an");
+            ignore.Add("in"); // Added to prevent "in" from matching inside "insider"
 
 
             //storing ignore pronouns
@@ -94,6 +109,11 @@ namespace ai_response
             ignore.Add("shall");
 
             ignore.Add("might");
+
+   
+            // "insider") and garbled concatenated responses.
+            ignore.Add("interested");
+            ignore.Add("like");
 
 
             //store positive words

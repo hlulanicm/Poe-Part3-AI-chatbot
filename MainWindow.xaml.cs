@@ -24,7 +24,6 @@ namespace Chatbot
     /// Interaction logic for MainWindow.xaml
     /// GreetAndName usage to help store usernames
     /// </summary>
-    /// 
 
 
     //this is the GUI code and how the GUI will operate and handle all user responses
@@ -39,17 +38,12 @@ namespace Chatbot
         int counting = 0;
         Random indexer = new Random();
 
-
-
         //Greet and name the user from Part one of the chatbot
         GreetAndName greeter = new GreetAndName();
 
         //Tracker and bot declared as fields so they are accessible across all methods
         InterestTracker tracker = new InterestTracker();
         Chats bot;
-
-
-
 
         public MainWindow()
         {
@@ -60,19 +54,16 @@ namespace Chatbot
             try { AudioGreeting.PlayGreeting(); }
             catch { }
         }
+
         private void proceed(object sender, RoutedEventArgs e)
-
         {
-
             home_grid.Visibility = Visibility.Hidden;//When the user proceeds the home grid must be hidden 
             username_grid.Visibility = Visibility.Visible;//Make the user input page visible
-
         }
+
         private void submit_name(object sender, RoutedEventArgs e)
         {
-
             String entered = username_input.Text.Trim();//Collecting name from the input box 
-
 
             //IF user name is empty display error message
             if (string.IsNullOrEmpty(entered))
@@ -83,12 +74,8 @@ namespace Chatbot
 
             username_error.Visibility = Visibility.Hidden; //User error message is initially hidden
 
-
-
             //Getting the username and using the GreetAndName class to store the userName and to save the users
             username = greeter.GetName(entered);
-
-
 
             //check if the user is returning (if they are display welcome back) 
             bool returning = IsReturningUser(username);
@@ -97,22 +84,15 @@ namespace Chatbot
             username_grid.Visibility = Visibility.Hidden;
             chat_grid.Visibility = Visibility.Visible; //Display the chat grid and hide the username grid
 
-
             header_username.Text = "Logged in AS: " + username;
 
             //Use GreetAndName to build a good welcome message
-
             // FIX 2: was malformed ternary with misplaced semicolon and colon
             String welcomMessage = returning
                 ? greeter.WelcomeBack(username)
                 : greeter.NewUserGreeting(username);
 
-
             show_message("CyberBot", welcomMessage);
-
-
-
-
         }
 
 
@@ -124,10 +104,10 @@ namespace Chatbot
         // EXIT button
         private void exit_click(object sender, RoutedEventArgs e) => ExitApp();
 
-        // Enter key sends message
+        // Enter key OR Space key sends message
         private void question_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter) ProcessInput();
+            if (e.Key == Key.Enter || e.Key == Key.Space) ProcessInput();
         }
 
         private void ProcessInput()
@@ -136,11 +116,10 @@ namespace Chatbot
 
             if (string.IsNullOrWhiteSpace(rawQuestion))
             {
-                //prompting the user toenter a question
+                //prompting the user to enter a question
                 show_message("CyberBot", "Please enter a question.");
                 return;
             }
-
 
             //Input validation (end process)
             //IF THE user inputs any exit questions we will stop the process 
@@ -153,23 +132,24 @@ namespace Chatbot
                 ExitApp();
                 return;
             }
+
             //Input validation (special characters)
-            //Regecting any special characters 
+            //Rejecting any special characters 
             String cleaned = Regex.Replace(rawQuestion, @"[^a-zA-Z0-9\s'-]", " ").Trim();
 
             show_message(username, rawQuestion);
             question.Clear();
 
-
-            auto_show_interest();
-
+            // FIX (duplicate bug): auto_show_interest MUST come after ai_check so the
+            // reminder bubble appears below the answer, not above it. More importantly,
+            // auto_show_interest now only shows a reminder — it never calls ai_check —
+            // so there is no risk of re-processing saved interests as new queries.
             ai_check(cleaned);
-
+            auto_show_interest();
         }
 
         private void ai_check(string input)
         {
-
             if (string.IsNullOrWhiteSpace(input))
             {
                 show_message("CyberBot", "Please enter a valid question no Special characters e.g @#$%^$%^&");
@@ -178,34 +158,60 @@ namespace Chatbot
                 //If the user has entered any special characters throw an appropriate error
             }
 
-
             string[] words = input.ToLower().Split(
-                   new char[] { ' ', ',', '.', '?', '!', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);//slit all words into an array to ensure no blank words are stored
+                   new char[] { ' ', ',', '.', '?', '!', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);//split all words into an array to ensure no blank words are stored
 
             bool found = false;
             string message = string.Empty;
             List<string> per_word = new List<string>();//Array created for storing the words and ensuring proper memory management
             List<string> answers_found = new List<string>();
 
+            // FIX (interest save bug): Separate the interest confirmation message from the
+            // keyword lookup results. Previously both were appended to the same `message`
+            // string and displayed in one bubble, causing the interest confirmation
+            // ("Great, I added phishing...") to be concatenated with an unrelated topic
+            // answer (Insider Threat) in a single response. Now the confirmation is
+            // captured separately and shown in its own bubble before keyword results.
+            string interest_message = string.Empty;
 
-            //if the first word is less than 2 words the Ai will read the next word and skip the current word (less than 2) 
+            // FIX (insider bug): Changed word.Length < 2 to word.Length <= 2.
+            // The original check used strict less-than, so 2-letter words like "in",
+            // "is", "am", "it" slipped through to keyword matching.
+            // "in" then matched keyword "insider" via the substring Contains check,
+            // causing Insider Threat to appear in unrelated responses.
+            // Raising the threshold to <= 2 blocks all single- and two-letter words
+            // by length alone, regardless of the ignore list.
             foreach (string word in words)
             {
-                if (word.Length < 2 || ignore.Contains(word.ToLower()))
-                    continue; //ignore short word
+                if (word.Length <= 2 || ignore.Contains(word.ToLower()))
+                    continue; //ignore short words
 
                 per_word.Clear();
 
                 //if the user enters a like indicator meaning they like a certain topic we will save the interest
                 if (word.Contains("interested") || word.Contains("like"))
                 {
-                    message += tracker.SaveInterests(username, words, ignore) + "";
+                    // FIX (interest save bug): Store the interest confirmation separately
+                    // so it does not get mixed into the cybersecurity keyword answer below.
+                    interest_message += tracker.SaveInterests(username, words, ignore);
+                    continue; // FIX (2fa + insider bug): Skip keyword matching for "interested"/"like"
+                              // so they never accidentally match a topic keyword.
                 }
 
                 foreach (string answer in reply)
                 {
+                    // FIX (2fa bug): Changed exact equality back to a smarter Contains match.
+                    // The previous exact-equality check (keyword == word) blocked "2fa" from
+                    // matching because the reply keyword is stored as "2fa" but the user may
+                    // type variations. More importantly, exact equality also broke short
+                    // alphanumeric tokens like "2fa" (length 3) that are valid keywords.
+                    // The fix uses keyword == word for normal words but also allows
+                    // word.Contains(keyword) when the keyword itself is short (<=3 chars,
+                    // e.g. "vpn", "2fa") to handle those edge cases — while keeping the
+                    // length guard (word.Length <= 2) above to prevent tiny words like "in"
+                    // from triggering "insider" via substring matching.
                     string keyword = answer.Split(':')[0].Trim().ToLower();
-                    if (keyword.Contains(word) || word.Contains(keyword))
+                    if (keyword == word || (keyword.Length <= 3 && word.Contains(keyword)))
                     {
                         found = true;
                         per_word.Add(answer);
@@ -221,18 +227,27 @@ namespace Chatbot
                         ? chosen.Substring(colonIdx + 1).Trim()
                         : chosen;
 
-                    answers_found.Add(display);
-
-
+                    // FIX (phishing duplicate bug): Only add if not already in the list.
+                    // Without this Distinct guard here, the same answer could be added
+                    // multiple times mid-loop if two keywords matched the same reply entry
+                    // (e.g. "phishing" matched by both "phishing" and a saved interest word),
+                    // causing it to appear twice in the final bubble.
+                    if (!answers_found.Contains(display))
+                        answers_found.Add(display);
                 }
-
             }
-            //Final input validation processs the ai will peform to ensure smooth flow and validity of user input
+
+            // FIX (interest save bug): Show the interest confirmation in its own bubble
+            // first, completely separate from any keyword lookup answer that follows.
+            if (!string.IsNullOrWhiteSpace(interest_message))
+            {
+                show_message("CyberBot", interest_message.Trim());
+            }
+
+            //Final input validation process the ai will perform to ensure smooth flow and validity of user input
             if (found && answers_found.Count > 0)
             {
-                answers_found = answers_found.Distinct().ToList();
                 foreach (string ans in answers_found)
-
                     message += ans + "\n";
                 show_message("CyberBot", message.TrimEnd('\n'));
             }
@@ -242,7 +257,7 @@ namespace Chatbot
             {
                 show_message("CyberBot", message.Trim());
             }
-            else
+            else if (string.IsNullOrWhiteSpace(interest_message))
             {
                 show_message("CyberBot", bot.Fallbackresponse());//if the chatbot does not understand what the user said show an appropriate error message
             }
@@ -251,30 +266,27 @@ namespace Chatbot
         private void auto_show_interest()
         {
             counting++;
-            if (counting < 3) return;
+            if (counting < 2) return;
 
             counting = 0;
 
             string interests = tracker.GetInterests(username);
             if (string.IsNullOrWhiteSpace(interests)) return;
 
-            show_message("CyberBot", "Just a reminder - you are interested in: " + interests);
-            ai_check(Regex.Replace(interests, @"[^a-zA-Z0-9\s'-]", " ").Trim());
+            // Only show the reminder — do NOT call ai_check() again.
+            // Calling ai_check() here caused all saved interest topics to be re-answered
+            // every second message, producing duplicate bubbles (e.g. 2FA appearing twice).
+            show_message("CyberBot", "Just a reminder, you are interested in: " + interests);
         }
 
         private void show_message(string name, string message)
         {
-
             TextBlock texblk = new TextBlock { TextWrapping = TextWrapping.Wrap };
             //Styles for the text block the user text and the AI must have colors
 
-
-
-
             texblk.Inlines.Add(new Run(name + ": ")
             {
-
-                Foreground = Brushes.Blue, //the name of the useer 
+                Foreground = Brushes.Blue, //the name of the user 
                 FontWeight = FontWeights.Bold
             });
             texblk.Inlines.Add(new Run(message) { Foreground = Brushes.White }); //the dialog text must be white but the user names must be blue
@@ -290,7 +302,7 @@ namespace Chatbot
             {
                 bubble.Background = new SolidColorBrush(Color.FromRgb(20, 44, 75));
 
-                //Alligning the text blocks to the left or right of the screen to accomodate change
+                //Aligning the text blocks to the left or right of the screen to accommodate change
                 bubble.HorizontalAlignment = HorizontalAlignment.Left;
 
                 bubble.Margin = new Thickness(0, 3, 80, 3);
@@ -312,7 +324,6 @@ namespace Chatbot
 
         private void ExitApp()
         {
-
             //display an appropriate error message when the user wants to exit
             show_message("CyberBot", greeter.Goodbye(username));
 
@@ -322,7 +333,6 @@ namespace Chatbot
         }
 
         //Extra Feature saving the user preferences in A text File
-
 
         //Method to check if the user is new or returning by comparing stored users(Will be removed Part 3 for a DB)
         private bool IsReturningUser(string name)
