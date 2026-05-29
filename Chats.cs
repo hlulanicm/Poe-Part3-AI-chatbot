@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections;
 
+
+
+
+
+//ST10474357
+//Part 2 summarry
 namespace ai_response
 {
     public class chats
@@ -38,6 +44,62 @@ namespace ai_response
             ignoring.Add("are");
             ignoring.Add("had");
 
+            ignoring.Add("a");
+            ignoring.Add("the");
+            ignoring.Add("us");
+            ignoring.Add("an");
+
+
+            //storing ignore pronouns
+            ignoring.Add("i");
+            ignoring.Add("you");
+            ignoring.Add("he");
+            ignoring.Add("she");
+            ignoring.Add("it");
+            ignoring.Add("we");
+            ignoring.Add("they");
+            ignoring.Add("me");
+            ignoring.Add("him");
+            ignoring.Add("her");
+            ignoring.Add("us");
+            ignoring.Add("them");
+            ignoring.Add("my");
+            ignoring.Add("your");
+            ignoring.Add("his");
+            ignoring.Add("its");
+            ignoring.Add("our");
+            ignoring.Add("their");
+            ignoring.Add("mine");
+            ignoring.Add("yours");
+
+            //storing ignore verbs
+
+            ignoring.Add("be");
+            ignoring.Add("am");
+            ignoring.Add("is");
+            ignoring.Add("are");
+            ignoring.Add("was");
+            ignoring.Add("have");
+            ignoring.Add("were");
+
+            ignoring.Add("has");
+            ignoring.Add("had");
+            ignoring.Add("do");
+            ignoring.Add("did");
+            ignoring.Add("does");
+            ignoring.Add("will");
+            ignoring.Add("can");
+            ignoring.Add("could");
+    
+            ignoring.Add("may");
+            ignoring.Add("would");
+            ignoring.Add("should");
+            ignoring.Add("shall");
+  
+            ignoring.Add("might");
+
+
+            //store positive words
             PositiveWord.Add("good");
             PositiveWord.Add("happy");
             PositiveWord.Add("wonderful");
