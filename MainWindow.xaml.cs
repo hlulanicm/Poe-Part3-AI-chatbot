@@ -30,6 +30,16 @@ namespace Chatbot
     public partial class MainWindow : Window
     {
 
+
+
+        //creating a new instance for the class
+
+        user_tasks Manage_tasks = new user_tasks();
+
+   
+
+
+
         //Creating an arrayList for both the replies and the ignore assets
         ArrayList reply = new ArrayList();
         ArrayList ignore = new ArrayList();
