@@ -33,7 +33,7 @@
     <Grid>
 
         <!-- HOME GRID -->
-        <Grid x:Name="home_grid" Visibility="Visible" Margin="0,0,0,10" HorizontalAlignment="Center" Width="880">
+        <Grid x:Name="home_grid" Visibility="Visible" Margin="0,5,0,5" HorizontalAlignment="Center" Width="880">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -97,7 +97,7 @@
   \____\__, |_.__/ \___|_|  |____/ \___/ \__|
        |___/
    Cybersecurity Awareness Bot
-</TextBlock>
+            </TextBlock>
 
             <TextBlock Grid.Row="1"
                        Text="Enter your username to continue"
