@@ -17,7 +17,16 @@ namespace Chatbot
 
         public void test_connection()
         {
-            SqlCommand connect = new SqlCommand();
+            SqlCommand connect = new SqlCommand(connection);
+            try
+            {
+
+            }
+            catch (Exception error)
+            {
+
+              
+            }
 
         }
 
